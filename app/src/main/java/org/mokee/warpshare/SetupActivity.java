@@ -127,7 +127,7 @@ public class SetupActivity extends AppCompatActivity {
         } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, Manifest.permission.BLUETOOTH_ADVERTISE, Manifest.permission.BLUETOOTH_CONNECT}, REQUEST_PERM);
         } else {
-            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN}, REQUEST_PERM);
+            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_FINE_LOCATION,  Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_PERM);
         }
     }
 

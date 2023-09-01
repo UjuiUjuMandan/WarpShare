@@ -17,6 +17,7 @@
 package org.mokee.warpshare;
 
 import android.Manifest;
+import android.R;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -103,7 +104,11 @@ public class SetupActivity extends AppCompatActivity {
     private void updateState() {
         final int ready = mAirDropManager.ready();
 //        if (checkSelfPermission(WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
-        if (checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PERMISSION_GRANTED) {
+        if ((checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PERMISSION_GRANTED) & (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU)) {
+            mGroupPerm.setVisibility(View.VISIBLE);
+            mGroupWifi.setVisibility(View.GONE);
+            mGroupBt.setVisibility(View.GONE);
+        } else if ((checkSelfPermission(WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) & (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU)) {
             mGroupPerm.setVisibility(View.VISIBLE);
             mGroupWifi.setVisibility(View.GONE);
             mGroupBt.setVisibility(View.GONE);
@@ -138,6 +143,10 @@ public class SetupActivity extends AppCompatActivity {
     @SuppressLint("MissingPermission")
     private void turnOnBluetooth() {
         startActivity(new Intent(ACTION_REQUEST_ENABLE));
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
+            //enable GPS
+            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        }
     }
 
     @Override

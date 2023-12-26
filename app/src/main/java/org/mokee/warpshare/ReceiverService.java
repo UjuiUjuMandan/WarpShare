@@ -22,8 +22,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
@@ -146,17 +148,32 @@ public class ReceiverService extends Service implements AirDropManager.ReceiverL
 
         mNotificationManager.createNotificationChannel(transferChannel);
 
-        startForeground(NOTIFICATION_ACTIVE, getNotificationBuilder(NOTIFICATION_CHANNEL_SERVICE, CATEGORY_SERVICE)
-                .setContentTitle(getString(R.string.notif_recv_active_title))
-                .setContentText(getString(R.string.notif_recv_active_desc))
-                .addAction(new Notification.Action.Builder(null,
-                        getString(R.string.settings),
-                        PendingIntent.getActivity(this, 0,
-                                new Intent(this, SettingsActivity.class),
-                                PendingIntent.FLAG_MUTABLE))
-                        .build())
-                .setOngoing(true)
-                .build());
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            startForeground(NOTIFICATION_ACTIVE, getNotificationBuilder(NOTIFICATION_CHANNEL_SERVICE, CATEGORY_SERVICE)
+                    .setContentTitle(getString(R.string.notif_recv_active_title))
+                    .setContentText(getString(R.string.notif_recv_active_desc))
+                    .addAction(new Notification.Action.Builder(null,
+                            getString(R.string.settings),
+                            PendingIntent.getActivity(this, 0,
+                                    new Intent(this, SettingsActivity.class),
+                                    PendingIntent.FLAG_MUTABLE))
+                            .build())
+                    .setOngoing(true)
+                    .build());
+        } else {
+            startForeground(NOTIFICATION_ACTIVE, getNotificationBuilder(NOTIFICATION_CHANNEL_SERVICE, CATEGORY_SERVICE)
+                    .setContentTitle(getString(R.string.notif_recv_active_title))
+                    .setContentText(getString(R.string.notif_recv_active_desc))
+                    .addAction(new Notification.Action.Builder(null,
+                            getString(R.string.settings),
+                            PendingIntent.getActivity(this, 0,
+                                    new Intent(this, SettingsActivity.class),
+                                    PendingIntent.FLAG_MUTABLE))
+                            .build())
+                    .setOngoing(true)
+                    .build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
+        }
+
 
         stopIfNotReady();
     }

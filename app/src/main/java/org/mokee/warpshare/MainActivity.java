@@ -41,8 +41,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.mokee.warpshare.airdrop.AirDropManager;
 import org.mokee.warpshare.airdrop.AirDropPeer;
 import org.mokee.warpshare.base.*;
-import org.mokee.warpshare.nearbysharing.NearShareManager;
-import org.mokee.warpshare.nearbysharing.NearSharePeer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverListener 
     private PartialWakeLock mWakeLock;
 
     private AirDropManager mAirDropManager;
-    private NearShareManager mNearShareManager;
 
     private boolean mIsInSetup = false;
     ActivityResultLauncher<Intent> setupActivityResultLauncher =
@@ -126,8 +123,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverListener 
                 WarpShareApplication.from(this).getCertificateManager());
         mAirDropManager.registerTrigger(TriggerReceiver.getTriggerIntent(this), this);
 
-        mNearShareManager = new NearShareManager(this);
-
         mAdapter = new PeersAdapter(this);
 
         final RecyclerView peersView = findViewById(R.id.peers);
@@ -141,7 +136,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverListener 
     protected void onDestroy() {
         super.onDestroy();
         mAirDropManager.destroy();
-        mNearShareManager.destroy();
     }
 
     @Override
@@ -157,7 +151,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverListener 
 
         if (!mIsDiscovering) {
             mAirDropManager.startDiscover(this);
-            mNearShareManager.startDiscover(this);
             mIsDiscovering = true;
         }
     }
@@ -168,7 +161,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverListener 
 
         if (mIsDiscovering && !mShouldKeepDiscovering) {
             mAirDropManager.stopDiscover();
-            mNearShareManager.stopDiscover();
             mIsDiscovering = false;
         }
 
@@ -188,10 +180,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverListener 
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
-//        else if (item.getItemId() == R.id.about) {
-//            startActivity(new Intent(this, AboutActivity.class));
-//            return true;
-//        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -398,8 +386,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverListener 
 
         if (peer instanceof AirDropPeer) {
             state.sending = mAirDropManager.send((AirDropPeer) peer, entities, listener);
-        } else if (peer instanceof NearSharePeer) {
-            state.sending = mNearShareManager.send((NearSharePeer) peer, entities, listener);
+        } else {
+            Log.d(TAG, "Unknown peer type: " + peer.getClass().getName());
         }
     }
 
@@ -470,14 +458,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverListener 
                 holder.cancelButton.setVisibility(View.GONE);
             }
             if (peer instanceof AirDropPeer) {
-                final boolean isMokee = ((AirDropPeer) peer).getMokeeApiVersion() > 0;
-                if (isMokee) {
-                    holder.iconView.setImageResource(R.drawable.ic_mokee_24dp);
-                } else {
-                    holder.iconView.setImageResource(R.drawable.ic_apple_24dp);
-                }
-            } else if (peer instanceof NearSharePeer) {
-                holder.iconView.setImageResource(R.drawable.ic_windows_24dp);
+                holder.iconView.setImageResource(R.drawable.ic_apple_24dp);
             } else {
                 holder.iconView.setImageDrawable(null);
             }

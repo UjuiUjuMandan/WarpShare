@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
+import androidx.annotation.RequiresPermission;
 import androidx.preference.PreferenceManager;
 
 public class ConfigManager {
@@ -33,11 +34,15 @@ public class ConfigManager {
     private static final String TAG = "ConfigManager";
 
     private final Context mContext;
-    private final SharedPreferences mPref;
+    private SharedPreferences mPref = null;
 
     public ConfigManager(Context context) {
         mContext = context;
-        mPref = PreferenceManager.getDefaultSharedPreferences(context);
+        try {
+            mPref = PreferenceManager.getDefaultSharedPreferences(context);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private String getBluetoothAdapterName() {
@@ -69,7 +74,7 @@ public class ConfigManager {
     }
 
     public boolean isDiscoverable() {
-        return mPref.getBoolean(KEY_DISCOVERABLE, false);
+        return mPref.getBoolean(KEY_DISCOVERABLE, true);
     }
 
 }

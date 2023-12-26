@@ -100,7 +100,7 @@ public class ReceiverService extends Service implements AirDropManager.ReceiverL
     static void updateDiscoverability(Context context) {
         final ConfigManager configManager = new ConfigManager(context);
         final PackageManager packageManager = context.getPackageManager();
-
+        //Log.d(TAG, "updateDiscoverability: " + configManager.isDiscoverable());
         final int state = configManager.isDiscoverable()
                 ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                 : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;

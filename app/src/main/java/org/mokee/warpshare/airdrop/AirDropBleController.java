@@ -16,6 +16,8 @@
 
 package org.mokee.warpshare.airdrop;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -33,6 +35,7 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +49,10 @@ import static android.bluetooth.le.ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT;
 import static android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY;
 import static android.content.Context.BLUETOOTH_SERVICE;
 
+import static androidx.core.content.PermissionChecker.checkSelfPermission;
+
 import androidx.annotation.RequiresApi;
+import androidx.core.content.PermissionChecker;
 
 import org.mokee.warpshare.TriggerReceiver;
 import org.mokee.warpshare.WarpShareApplication;
@@ -149,16 +155,21 @@ class AirDropBleController {
             }
         }
 
-        mAdvertiser.startAdvertising(
-                new AdvertiseSettings.Builder()
-                        .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
-                        .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
-                        .setConnectable(true)
-                        .build(),
-                new AdvertiseData.Builder()
-                        .addManufacturerData(MANUFACTURER_ID, MANUFACTURER_DATA)
-                        .build(),
-                mAdvertiseCallback);
+        final boolean granted = checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_ADVERTISE) == PermissionChecker.PERMISSION_GRANTED;
+
+        if (granted) {
+            Log.d(TAG, "triggerDiscoverable: granted");
+            mAdvertiser.startAdvertising(
+                    new AdvertiseSettings.Builder()
+                            .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
+                            .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
+                            .setConnectable(true)
+                            .build(),
+                    new AdvertiseData.Builder()
+                            .addManufacturerData(MANUFACTURER_ID, MANUFACTURER_DATA)
+                            .build(),
+                    mAdvertiseCallback);
+        }
     }
 
     void stop() {
@@ -185,23 +196,28 @@ class AirDropBleController {
         filters.add(new ScanFilter.Builder()
                 .setManufacturerData(MANUFACTURER_ID, MANUFACTURER_DATA, MANUFACTURER_DATA)
                 .build());
-
+        final boolean granted;
         try {
-            mScanner.startScan(filters,
-                    new ScanSettings.Builder()
-                            .setCallbackType(CALLBACK_TYPE_FIRST_MATCH | CALLBACK_TYPE_MATCH_LOST)
-                            .setMatchMode(MATCH_MODE_STICKY)
-                            .setNumOfMatches(MATCH_NUM_MAX_ADVERTISEMENT)
-                            .setScanMode(SCAN_MODE_LOW_LATENCY)
-                            .build(),
-                    pendingIntent);
-        }catch (Exception ex){
-            PendingIntent pendingIntent2 = TriggerReceiver.getTriggerIntent2(mContext,CALLBACK_TYPE_FIRST_MATCH,null);
-            try {
-                pendingIntent2.send();
-            } catch (PendingIntent.CanceledException e) {
-                e.printStackTrace();
+            granted = checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_SCAN) == PermissionChecker.PERMISSION_GRANTED;
+            if (granted) {
+                mScanner.startScan(filters,
+                        new ScanSettings.Builder()
+                                .setCallbackType(CALLBACK_TYPE_FIRST_MATCH | CALLBACK_TYPE_MATCH_LOST)
+                                .setMatchMode(MATCH_MODE_STICKY)
+                                .setNumOfMatches(MATCH_NUM_MAX_ADVERTISEMENT)
+                                .setScanMode(SCAN_MODE_LOW_LATENCY)
+                                .build(),
+                        pendingIntent);
+            } else {
+                PendingIntent pendingIntent2 = TriggerReceiver.getTriggerIntent2(mContext,CALLBACK_TYPE_FIRST_MATCH,null);
+                try {
+                    pendingIntent2.send();
+                } catch (PendingIntent.CanceledException e) {
+                    e.printStackTrace();
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         Log.d(TAG, "startScan");
     }

@@ -30,7 +30,7 @@ class AirDropWlanController {
 
     private static final String TAG = "AirDropWlanController";
 
-    private static final String[] INTERFACES = new String[]{"wlan1", "wlan0"};
+    private static final String[] INTERFACES = new String[] {"wlan0", "wlan1"};
 
     private final Object mLock = new Object();
 

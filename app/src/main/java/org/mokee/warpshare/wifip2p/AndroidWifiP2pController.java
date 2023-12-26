@@ -139,7 +139,7 @@ public class AndroidWifiP2pController {
                      * device: The device running the advertised service.
                      */
                     discoverListener.onPeerFound(new WifiP2pPeer(srcDevice.deviceAddress,srcDevice.deviceName+"-vin"));
-                    Log.d(TAG, "WifiP2pManager.setDnsSdResponseListeners onDnsSdTxtRecordAvailable " + srcDevice.toString());
+                    Log.d(TAG, "WifiP2pManager.setDnsSdResponseListeners onDnsSdTxtRecordAvailable " + srcDevice);
                     Log.d(TAG, "WifiP2pManager.setDnsSdResponseListeners onDnsSdTxtRecordAvailable fullDomain = " + fullDomainName);
                     Log.d(TAG, "WifiP2pManager.setDnsSdResponseListeners onDnsSdTxtRecordAvailable DnsSdTxtRecord available -" + txtRecordMap.toString());
                 });

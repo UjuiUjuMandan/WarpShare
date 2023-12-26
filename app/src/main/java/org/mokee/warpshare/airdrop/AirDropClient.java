@@ -62,7 +62,7 @@ class AirDropClient {
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    private OkHttpClient mHttpClient;
+    private final OkHttpClient mHttpClient;
     private NetworkInterface mInterface;
 
     AirDropClient(CertificateManager certificateManager) {

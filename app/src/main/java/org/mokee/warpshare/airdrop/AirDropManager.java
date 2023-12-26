@@ -94,9 +94,9 @@ public class AirDropManager implements
     private DiscoverListener mDiscoverListener;
     private ReceiverListener mReceiverListener;
 
-    private ExecutorService mArchiveExecutor;
+    private final ExecutorService mArchiveExecutor;
 
-    private Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
+    private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
     public AirDropManager(Context context, CertificateManager certificateManager) {
         mConfigManager = new AirDropConfigManager(context);
@@ -240,7 +240,7 @@ public class AirDropManager implements
 
         return new SendingSession() {
             @Override
-            public final void cancel() {
+            public void cancel() {
                 final Cancelable cancelable = ref.getAndSet(null);
                 if (cancelable != null) {
                     cancelable.cancel();

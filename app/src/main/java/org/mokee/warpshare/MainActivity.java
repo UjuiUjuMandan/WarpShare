@@ -496,9 +496,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverListener 
                 progressBar = itemView.findViewById(R.id.progress);
                 cancelButton = itemView.findViewById(R.id.cancel);
             }
-
         }
-
     }
-
 }

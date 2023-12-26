@@ -68,8 +68,8 @@ class AirDropNsdController {
 
     private JmDNS mJmdns;
 
-    private HandlerThread mNetworkingThread;
-    private Handler mNetworkingHandler;
+    private final HandlerThread mNetworkingThread;
+    private final Handler mNetworkingHandler;
 
     @SuppressWarnings("ConstantConditions")
     AirDropNsdController(Context context, AirDropConfigManager configManager, AirDropManager parent) {

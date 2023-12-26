@@ -33,7 +33,7 @@ import javax.net.ssl.X509TrustManager;
 import okio.Buffer;
 
 public class CertificateManager {
-    private String KEYSTORE_PWD = "android";
+    private final String KEYSTORE_PWD = "android";
 
     private SSLContext mServerSSlContext;
 

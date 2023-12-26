@@ -216,6 +216,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverListener 
     @Override
     public void onPeerFound(Peer peer) {
         Log.d(TAG, "Found: " + peer.id + " (" + peer.name + ")");
+        if (mPeers.containsKey(peer.id)) {
+            Log.d(TAG, "Already found: " + peer.id + " (" + peer.name + ")");
+            return;
+        }
         mPeers.put(peer.id, peer);
         mPeerStates.put(peer.id, new PeerState());
         mAdapter.notifyDataSetChanged();

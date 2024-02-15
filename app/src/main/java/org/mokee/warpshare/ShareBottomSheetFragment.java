@@ -16,6 +16,7 @@
 
 package org.mokee.warpshare;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
@@ -34,6 +35,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,7 +56,6 @@ import org.mokee.warpshare.wifip2p.WifiP2pPeer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static org.mokee.warpshare.airdrop.AirDropManager.STATUS_OK;
 
@@ -109,6 +111,18 @@ public class ShareBottomSheetFragment extends BottomSheetDialogFragment
 
     public ShareBottomSheetFragment() {
     }
+
+    ActivityResultLauncher<Intent> setupActivityResultLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        mIsInSetup = false;
+                        if (result.getResultCode() != Activity.RESULT_OK) {
+                            mParent.finish();
+                        } else {
+                            mAirDropManager.registerTrigger(TriggerReceiver.getTriggerIntent(getContext()), getContext());
+                        }
+                    });
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -256,11 +270,17 @@ public class ShareBottomSheetFragment extends BottomSheetDialogFragment
             return true;
         }
 
-        final boolean granted = mParent.checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED;
+        final boolean granted;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            granted = (mParent.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) == PERMISSION_GRANTED) && (mParent.checkSelfPermission(Manifest.permission.BLUETOOTH_ADVERTISE) == PERMISSION_GRANTED);
+        } else {
+            granted = mParent.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED;
+        }
         final boolean ready = mAirDropManager.ready() == STATUS_OK;
         if (!granted || !ready) {
             mIsInSetup = true;
-            startActivityForResult(new Intent(mParent, SetupActivity.class), REQUEST_SETUP);
+            //startActivityForResult(new Intent(mParent, SetupActivity.class), REQUEST_SETUP);
+            setupActivityResultLauncher.launch(new Intent(mParent, SetupActivity.class));
             return true;
         } else {
             return false;

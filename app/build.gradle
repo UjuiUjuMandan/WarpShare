@@ -84,7 +84,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     //Gson
     implementation 'com.google.code.gson:gson:2.8.9'
-    implementation 'com.gemalto.jp2:jp2-android:1.0'
+    implementation 'com.github.Tgo1014:JP2ForAndroid:1.0.4'
     implementation 'com.koushikdutta.async:androidasync:2.2.1'
     implementation 'org.apache.commons:commons-compress:1.21'
     implementation 'com.googlecode.plist:dd-plist:1.22'

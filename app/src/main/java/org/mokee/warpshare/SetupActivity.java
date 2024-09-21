@@ -133,7 +133,9 @@ public class SetupActivity extends AppCompatActivity {
                     Manifest.permission.READ_MEDIA_VIDEO,
                     Manifest.permission.BLUETOOTH_ADVERTISE,
                     Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.BLUETOOTH_SCAN
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.NEARBY_WIFI_DEVICES,
+                    Manifest.permission.ACCESS_FINE_LOCATION
             }, REQUEST_PERM);
         } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, Manifest.permission.BLUETOOTH_ADVERTISE, Manifest.permission.BLUETOOTH_CONNECT}, REQUEST_PERM);
